@@ -4,6 +4,24 @@
   "version": "1.0.0",
   "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a",
   "license": "MIT",
+  "keywords": [
+    "wechat-qrcode",
+    "qrcode"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.es.js",
+      "require": "./dist/main.cjs.js"
+    }
+  },
+  "main": "./dist/main.cjs.js",
+  "module": "./dist/main.es.js",
+  "types": "./dist/main.d.ts",
+  "files": [
+    "./package.json",
+    "dist/"
+  ],
   "scripts": {
     "build": "tsc && vite build",
     "prepare": "tsx scripts/bundle-models.ts",
