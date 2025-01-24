@@ -5,7 +5,7 @@ export default antfu(
     typescript: true,
     vue: true,
     ignores: [
-      './src/assets/**/*',
+      '**/assets/*',
     ],
   },
   {
