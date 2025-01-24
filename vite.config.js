@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: ['src/main.ts'],
       fileName: (format, entryName) => `${entryName}.${format}.js`,
-      name: 'qrEncode',
+      name: 'qrDecode',
       formats: ['es', 'cjs', 'umd'],
     },
   },
