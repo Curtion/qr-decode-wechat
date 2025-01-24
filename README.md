@@ -2,7 +2,7 @@
 
 [中文版](README-CN.md)
 
-A JavaScript QR code decoding library, compiled to WebAssembly using opencv v4.11.0 and wechat_qrcode module from opencv_contrib.
+A JavaScript QR code decoding library, compiled to WebAssembly using [opencv](https://github.com/opencv/opencv) v4.11.0 and [wechat_qrcode](https://github.com/opencv/opencv_contrib/tree/4.11.0/modules/wechat_qrcode) module from opencv_contrib.
 
 Partially based on code from [qr-scanner-wechat](https://github.com/antfu/qr-scanner-wechat) project.
 
