@@ -27,6 +27,9 @@
   "types": "./dist/main.d.ts",
   "files": [
     "./package.json",
+    "LICENSE",
+    "README-CN.md",
+    "README.md",
     "dist/"
   ],
   "scripts": {
