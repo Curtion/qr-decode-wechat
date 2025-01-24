@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码识别</title>
+    <script src="//unpkg.com/qr-decode-wechat@1.0.0/dist/main.umd.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .result-container {
+            margin: 20px 0;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .result-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .index {
+            font-weight: bold;
+            color: red;
+            margin-right: 10px;
+        }
+
+        .text {
+            word-break: break-all;
+        }
+
+        #loading {
+            color: #666;
+            margin: 10px 0;
+        }
+
+        #error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="fileInput" accept="image/*">
+    <div id="error"></div>
+    <div id="previewSection" style="display: none;">
+        <div class="result-container">
+            <canvas id="canvasPreview"></canvas>
+        </div>
+        <div id="loading">模型加载中...</div>
+        <div class="results" id="resultsContainer">
+            <h3>识别结果：</h3>
+            <div class="result-list" id="resultList"></div>
+        </div>
+    </div>
+
+    <script>
+        (async function() {
+            const { decode, ready } = qrDecode;
+            let isLoaded = false;
+
+            // 初始化二维码解码库
+            try {
+                await ready();
+                isLoaded = true;
+                document.getElementById('loading').style.display = 'none';
+            } catch(e) {
+                showError(e);
+                return;
+            }
+
+            // 文件选择处理
+            document.getElementById('fileInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                clearError();
+                document.getElementById('previewSection').style.display = 'block';
+                
+                try {
+                    const dataUrl = await readFile(file);
+                    const img = await loadImage(dataUrl);
+                    
+                    // 创建预处理canvas
+                    const MAX_WIDTH = 400;
+                    const processCanvas = document.createElement('canvas');
+                    processCanvas.width = MAX_WIDTH;
+                    processCanvas.height = (MAX_WIDTH * img.height) / img.width;
+                    const processCtx = processCanvas.getContext('2d');
+                    processCtx.filter = 'grayscale(100%) contrast(200%) brightness(100%)';
+                    processCtx.drawImage(img, 0, 0, img.width, img.height, 0, 0, MAX_WIDTH, processCanvas.height);
+
+                    // 初始化预览canvas
+                    const canvas = document.getElementById('canvasPreview');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    // 执行解码（使用预处理后的图像）
+                    const results = await decode(processCanvas);
+                    renderResults(results);
+                    drawDetectionAreas(img, results);
+                } catch(e) {
+                    showError(e);
+                }
+            });
+
+            function readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function loadImage(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            }
+
+            function drawDetectionAreas(img, results) {
+                const canvas = document.getElementById('canvasPreview');
+                const ctx = canvas.getContext('2d');
+                const scaleFactor = img.width / 400;
+
+                results.forEach((item, index) => {
+                    if (!item.rect) return;
+                    
+                    const { x, y, width, height } = item.rect;
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(
+                        x * scaleFactor,
+                        y * scaleFactor,
+                        width * scaleFactor,
+                        height * scaleFactor
+                    );
+                    
+                    ctx.fillStyle = 'red';
+                    ctx.font = '20px Arial';
+                    ctx.fillText(`#${index+1}`, x * scaleFactor + 5, y * scaleFactor + 25);
+                });
+            }
+
+            function renderResults(results) {
+                const container = document.getElementById('resultList');
+                container.innerHTML = results.map((item, index) => `
+                    <div class="result-item">
+                        <span class="index">#${index+1}</span>
+                        <span class="text">${item.text}</span>
+                    </div>
+                `).join('');
+            }
+
+            function showError(error) {
+                document.getElementById('error').textContent = error?.message || error;
+            }
+
+            function clearError() {
+                document.getElementById('error').textContent = '';
+            }
+        })();
+    </script>
+</body>
+</html>
