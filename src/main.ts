@@ -70,3 +70,5 @@ async function loadModels(cv: any) {
 
   return qrcode_detector
 }
+
+export * from './types'
