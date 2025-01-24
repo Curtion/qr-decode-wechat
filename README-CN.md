@@ -11,6 +11,8 @@
  - 支持多结果解析返回
  - 禁止使用[unsafe-eval](https://github.com/emscripten-core/emscripten/issues/20994)语法, 原理上使其可以在`微信小程序`和`Manifest V3拓展`中使用
 
+[在线演示](https://curtion.github.io/qr-decode-wechat/example/cdn-vanilla/)
+
 # 使用方法
 
 ## npm

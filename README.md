@@ -11,6 +11,8 @@ Key improvements compared to qr-scanner-wechat:
  - Support multiple decoding results return
  - Eliminate [unsafe-eval](https://github.com/emscripten-core/emscripten/issues/20994) usage, making it compatible with WeChat Mini Programs and Chrome Manifest V3 extensions
 
+[playground](https://curtion.github.io/qr-decode-wechat/example/cdn-vanilla/)
+
 # Usage
 
 ## npm
